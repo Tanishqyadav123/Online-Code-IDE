@@ -1,7 +1,6 @@
 import { Response, Request } from "express";
 
 export const errorHandler = (
-  req: Request,
   res: Response,
   status: number,
   message: string,
@@ -9,6 +8,6 @@ export const errorHandler = (
   return res.status(status).json({
     success: false,
     message,
-    path: req.baseUrl,
+    // path: req.baseUrl,
   });
 };

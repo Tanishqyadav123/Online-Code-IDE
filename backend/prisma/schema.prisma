@@ -16,10 +16,10 @@ datasource db {
 model Users {
   id        Int        @id @default(autoincrement())
   clerkId   String?    @unique // Clerk Id will be populate using the webhook
-  firstName String
-  lastName  String
-  email     String     @unique
-  password  String
+  firstName String?
+  lastName  String?
+  email     String     ?@unique
+  password  String?
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   projects  Projects[]
