@@ -1,6 +1,45 @@
+"use client";
+
+import { useAuth, useUser } from "@clerk/nextjs";
+import axios from "axios";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Home() {
+  const { isSignedIn, user, isLoaded } = useUser();
+  const { getToken } = useAuth();
+  const router = useRouter();
+  async function getUserToken() {
+    if (isSignedIn && user) {
+      console.log({ isSignedIn, user, isLoaded });
+
+      const token = await getToken();
+      console.log({ token });
+
+      // Call for API to get user Details from Backend :-
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/users`,
+          {
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        if (response.status === 200) {
+          router.push("/template");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
+
+  useEffect(() => {
+    getUserToken();
+  }, [isSignedIn, user, isLoaded]);
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">

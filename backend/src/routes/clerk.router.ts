@@ -5,7 +5,6 @@ const clerkRouter = Router();
 
 clerkRouter.post(
   "/webhook",
-  //   express.raw({ type: "application/json" }),
   clerkWebhook,
 );
 

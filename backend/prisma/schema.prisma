@@ -18,23 +18,25 @@ model Users {
   clerkId   String?    @unique // Clerk Id will be populate using the webhook
   firstName String?
   lastName  String?
-  email     String     ?@unique
+  email     String?    @unique
   password  String?
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   projects  Projects[]
+
+  @@index([email])
 }
 
 model Templates {
   id           Int          @id @default(autoincrement())
-  templateName TemplateEnum
+  templateName TemplateEnum @unique
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   projects     Projects[]
 }
 
 model Projects {
-  id         Int    @id @default(autoincrement())
+  id         String @id @default(uuid())
   name       String
   templateId Int
   userId     Int
@@ -46,7 +48,7 @@ model Projects {
   updatedAt       DateTime  @updatedAt
 
   // Keeping a Composite Key 
-  @@unique([name, userId])
+  // @@unique([name, userId])
 }
 
 enum TemplateEnum {

@@ -11,6 +11,13 @@ export const isUserExistWithEmail = async (email: string) => {
   return !!userExist;
 };
 
+export const getUserById = async (clerkId: string) => {
+  return prisma.users.findUnique({
+    where: {
+      clerkId,
+    },
+  });
+};
 export const createNewUserRepo = async (userBody: CreateNewUserType) => {
   const newUser = await prisma.users.create({
     data: userBody,
