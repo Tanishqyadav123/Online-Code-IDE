@@ -11,6 +11,7 @@ import { getUserById } from "../repository/user.repo.js";
 import { responseHandler } from "../handler/responseHandler.js";
 import { exec } from "node:child_process";
 import path from "node:path";
+import { buildDirectoryTree } from "../utils/buildDirectoryTree.utils.js";
 
 export const createNewProject = asyncHandler(
   async (req: Request, res: Response) => {
@@ -84,3 +85,18 @@ export const createNewProject = asyncHandler(
     }
   },
 );
+
+export const getProjectTree = asyncHandler(async (req: Request, res: Response) => {
+  const projectId = req.params.projectId as string;
+
+  if (!projectId) {
+    return errorHandler(res, 400, "Project Id is required");
+  }
+
+  const projectPath = path.join(process.cwd(), "Projects", projectId);
+
+  console.log({ projectPath });
+  let output = await buildDirectoryTree(projectPath, []);
+
+  return responseHandler(res, 200, "Structure", output);
+});

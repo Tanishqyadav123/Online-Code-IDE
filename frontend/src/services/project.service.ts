@@ -3,6 +3,7 @@ import {
   createProjectResponse,
   globalResponseType,
 } from "../types/response.types";
+import { ProjectTreeInterface } from "../interface/Project.interface";
 
 export const createNewProjectService = async (
   name: string,
@@ -25,4 +26,14 @@ export const createNewProjectService = async (
   );
 
   return response.data as globalResponseType<createProjectResponse>;
+};
+
+export const getProjectDirectoryTreeService = async (projectId: string) => {
+  // hitting the api
+
+  const response = await axios.get(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/projects/get-tree/${projectId}`,
+  );
+
+  return response.data as globalResponseType<ProjectTreeInterface[]>;
 };

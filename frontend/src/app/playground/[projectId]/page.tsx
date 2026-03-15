@@ -1,7 +1,44 @@
-async function page({ params }: { params: { projectId: string } }) {
-  const { projectId } = await params;
-  console.log(params);
-  return <div>this is the project code playground : {projectId}</div>;
+"use client";
+
+import { ProjectSideBar } from "@/src/appComponents/ProjectSidebar";
+import { ProjectTreeInterface } from "@/src/interface/Project.interface";
+import { getProjectDirectoryTreeService } from "@/src/services/project.service";
+import { useParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
+
+function page() {
+  const { projectId } = useParams<{ projectId: string }>();
+  const [projectDirectoryTree, setProjectDirectoryTree] = useState<
+    ProjectTreeInterface[]
+  >([]);
+
+  const fetchProjectDirectoryTree = async () => {
+    if (projectId) {
+      try {
+        const response = await getProjectDirectoryTreeService(projectId);
+
+        if (response.success) {
+          setProjectDirectoryTree(response.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchProjectDirectoryTree();
+  }, []);
+
+  return (
+    <div className="flex h-screen bg-gray-50">
+      <div className="w-72 border-r bg-white overflow-y-auto p-3">
+        {projectDirectoryTree && projectDirectoryTree.length > 0 && (
+          <ProjectSideBar projectTree={projectDirectoryTree} />
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default page;

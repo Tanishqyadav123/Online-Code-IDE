@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { requireAuth } from "@clerk/express";
-import { createNewProject } from "../controllers/project.controller.js";
+import {
+  createNewProject,
+  getProjectTree,
+} from "../controllers/project.controller.js";
 
 const projectRouter = Router();
 
@@ -9,5 +12,7 @@ projectRouter.post(
   requireAuth({ apiUrl: "/something" }),
   createNewProject,
 );
+
+projectRouter.get("/get-tree/:projectId", getProjectTree);
 
 export default projectRouter;
