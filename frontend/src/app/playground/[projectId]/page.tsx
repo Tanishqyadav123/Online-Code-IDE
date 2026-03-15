@@ -1,10 +1,12 @@
 "use client";
 
+import Editor from "@/src/appComponents/Editor";
 import { ProjectSideBar } from "@/src/appComponents/ProjectSidebar";
 import { ProjectTreeInterface } from "@/src/interface/Project.interface";
 import { getProjectDirectoryTreeService } from "@/src/services/project.service";
+import { draculaTheme } from "@/src/themes/dracula";
 import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 function page() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -37,6 +39,8 @@ function page() {
           <ProjectSideBar projectTree={projectDirectoryTree} />
         )}
       </div>
+
+      <Editor customTheme={draculaTheme} />
     </div>
   );
 }
