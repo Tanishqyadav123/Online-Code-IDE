@@ -7,10 +7,10 @@ export const buildDirectoryTree = async (
 ) => {
   // Base Case :-
 
-  console.log("All Path ", fileFolderNamePath);
+  // console.log("All Path ", fileFolderNamePath);
   const stats = await fs.stat(fileFolderNamePath);
 
-  console.log(stats.isFile(), fileFolderNamePath);
+  // console.log(stats.isFile(), fileFolderNamePath);
   if (stats.isFile()) {
     finalArr.push({
       path: fileFolderNamePath,
@@ -29,7 +29,7 @@ export const buildDirectoryTree = async (
   const data = await fs.readdir(fileFolderNamePath);
 
   if (stats.isDirectory()) {
-    console.log("DaTA IS ", data);
+    // console.log("DaTA IS ", data);
     for (let i = 0; i < data.length; i++) {
       let arr: any[] = [];
       // call for the build directory tree function :-
