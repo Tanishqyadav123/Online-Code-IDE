@@ -3,6 +3,8 @@ import { ProjectTreeInterface } from "../interface/Project.interface";
 import { ProjectSideBar } from "./ProjectSidebar";
 import { RiArrowRightSLine } from "react-icons/ri";
 import { FiFolder, FiFile } from "react-icons/fi";
+import { useSocket } from "../context/socketContext";
+import { useFileContext } from "../context/fileContext";
 
 export const TreeNode = ({
   nodeDetails,
@@ -11,10 +13,50 @@ export const TreeNode = ({
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
+  const socket = useSocket();
+  const { setCurrentFilePath, setCurrentFileContent } = useFileContext();
+
+  const handleReadFileContent = (filePath: string) => {
+    console.log("File Path is : ", filePath);
+
+    console.log(socket);
+    if (!socket) {
+      return;
+    }
+
+    socket.emit("read-file", {
+      filePath,
+    });
+
+    setCurrentFilePath(filePath);
+
+    socket.on("return-read-file", (data) => {
+      /*
+        Data looks like :- {
+            response : message,
+            data : file content
+         }
+      */
+      setCurrentFileContent(data.data);
+    });
+
+    socket.on("error-read-file", (data) => {
+      /*
+        Data looks like :- {
+            response : message,
+         }
+      */
+      console.error(data.response);
+    });
+  };
+
   return (
     <div className="w-full text-sm text-gray-800">
       {nodeDetails.type === "file" ? (
-        <div className="flex items-center gap-2 px-4 py-1 cursor-pointer hover:bg-gray-200 rounded-md">
+        <div
+          onDoubleClick={() => handleReadFileContent(nodeDetails.path)}
+          className="flex items-center gap-2 px-4 py-1 cursor-pointer hover:bg-gray-200 rounded-md"
+        >
           <FiFile className="text-gray-600" />
           <span>{nodeDetails.name}</span>
         </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useRef } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
 interface SocketContextInterface {
@@ -13,23 +13,26 @@ export const SocketContextProvider = ({
 }: {
   children: React.ReactElement;
 }) => {
-  const socketRef = useRef<null | Socket>(null);
+  const [socket, setSocket] = useState<null | Socket>(null);
   // Creating a use effect :- for clean up
 
   useEffect(() => {
-    if (!socketRef.current) {
+    if (!socket) {
       // Intialize the socket :-
-      socketRef.current = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}/editor`, {
+      const soc = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}/editor`, {
         transports: ["websocket"],
       });
+
+      setSocket(soc);
     }
 
+    console.log(socket, " Value is");
     return () => {
-      socketRef.current?.close();
+      socket?.close();
     };
   }, []);
   return (
-    <SocketContext.Provider value={{ socket: socketRef.current }}>
+    <SocketContext.Provider value={{ socket: socket }}>
       {children}
     </SocketContext.Provider>
   );
@@ -37,5 +40,7 @@ export const SocketContextProvider = ({
 
 // Returing a hook so we can use it anywhere :-
 export const useSocket = () => {
-  return useContext(SocketContext).socket;
+  let socket = useContext(SocketContext).socket;
+  //   console.log("Returning thing ", socket);
+  return socket;
 };

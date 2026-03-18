@@ -1,3 +1,4 @@
+import { response } from "express";
 import fs from "fs/promises";
 import { Socket } from "socket.io";
 
@@ -22,13 +23,16 @@ export const readFile = async (filePath: string, socket: Socket) => {
     });
 
     // Emit the event to socket :-
-    socket.emit("read-file", {
+    socket.emit("return-read-file", {
       response: "File read successfully",
       data: fileContent,
     });
   } catch (error) {
-    console.log("File not found....");
-    throw error;
+    socket.emit("error-read-file", {
+      response: "File not found (Invalid file path)",
+      data: null,
+    });
+    // throw error;
   }
 };
 
@@ -50,11 +54,7 @@ export const updateFile = async (
   }
 };
 
-
-export const deleteFile = async (
-  filePath: string,
-  socket: Socket,
-) => {
+export const deleteFile = async (filePath: string, socket: Socket) => {
   try {
     await fs.unlink(filePath);
 
@@ -68,13 +68,9 @@ export const deleteFile = async (
   }
 };
 
-
 // Folder Functions :-
 
-export const createFolder = async (
-  filePath: string,
-  socket: Socket,
-) => {
+export const createFolder = async (filePath: string, socket: Socket) => {
   try {
     await fs.mkdir(filePath);
 
@@ -88,11 +84,7 @@ export const createFolder = async (
   }
 };
 
-
-export const deleteFolder = async (
-  filePath: string,
-  socket: Socket,
-) => {
+export const deleteFolder = async (filePath: string, socket: Socket) => {
   try {
     await fs.rmdir(filePath);
 

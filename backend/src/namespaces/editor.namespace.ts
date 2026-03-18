@@ -1,5 +1,8 @@
 import { Socket } from "socket.io";
 import { io } from "../index.js";
+import { readFileEventType } from "../interface/socketInterface/editor.interface.js";
+import { readFile } from "../handler/fileHandler.js";
+import { readFileEventHandler } from "../socketHandler/editor.handler.js";
 
 // Creating the namespace for Editor :-
 export function connectToEditorNamespace() {
@@ -14,6 +17,9 @@ export function connectToEditorNamespace() {
         response: "no need for this data",
       });
     });
+
+    // Event For Read File :-
+    socket.on("read-file", (data : readFileEventType) => readFileEventHandler(data , socket));
     socket.on("disconnect", () => {
       console.log("Socket Disconnected successFully");
     });
