@@ -1,8 +1,17 @@
 import { Socket } from "socket.io";
 import { io } from "../index.js";
-import { readFileEventType } from "../interface/socketInterface/editor.interface.js";
-import { readFile } from "../handler/fileHandler.js";
-import { readFileEventHandler } from "../socketHandler/editor.handler.js";
+import {
+  editFileEventType,
+  readFileEventType,
+  deleteFileEventType,
+  createFileEventType,
+} from "../interface/socketInterface/editor.interface.js";
+import {
+  editFileEventHandler,
+  readFileEventHandler,
+  deleteFileEventHandler,
+  createFileEventHandler,
+} from "../socketHandler/editor.handler.js";
 
 // Creating the namespace for Editor :-
 export function connectToEditorNamespace() {
@@ -19,7 +28,22 @@ export function connectToEditorNamespace() {
     });
 
     // Event For Read File :-
-    socket.on("read-file", (data : readFileEventType) => readFileEventHandler(data , socket));
+    socket.on("read-file", (data: readFileEventType) =>
+      readFileEventHandler(data, socket),
+    );
+
+    // Event For Edit File :-
+    socket.on("edit-file", (data: editFileEventType) =>
+      editFileEventHandler(data, socket),
+    );
+
+    // Event For Delete File :-
+    socket.on("delete-file", (data: deleteFileEventType) =>
+      deleteFileEventHandler(data, socket),
+    );
+
+    // Event For Create New file :-
+    socket.on("new-file", (data : createFileEventType) => createFileEventHandler(data, socket));
     socket.on("disconnect", () => {
       console.log("Socket Disconnected successFully");
     });

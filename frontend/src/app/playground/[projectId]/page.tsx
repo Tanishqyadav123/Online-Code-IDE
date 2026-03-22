@@ -2,6 +2,7 @@
 
 import Editor from "@/src/appComponents/Editor";
 import { ProjectSideBar } from "@/src/appComponents/ProjectSidebar";
+import { useProjectDirectory } from "@/src/context/projectDirectoryContext";
 import { ProjectTreeInterface } from "@/src/interface/Project.interface";
 import { getProjectDirectoryTreeService } from "@/src/services/project.service";
 import { draculaTheme } from "@/src/themes/dracula";
@@ -10,9 +11,8 @@ import { useEffect, useState } from "react";
 
 function page() {
   const { projectId } = useParams<{ projectId: string }>();
-  const [projectDirectoryTree, setProjectDirectoryTree] = useState<
-    ProjectTreeInterface[]
-  >([]);
+  const { projectDirectory, setProjectDirectory, setProjectId } =
+    useProjectDirectory();
 
   const fetchProjectDirectoryTree = async () => {
     if (projectId) {
@@ -20,8 +20,10 @@ function page() {
         const response = await getProjectDirectoryTreeService(projectId);
 
         if (response.success) {
-          setProjectDirectoryTree(response.data);
+          setProjectDirectory(response.data);
         }
+
+        setProjectId(projectId);
       } catch (error) {
         console.log(error);
       }
@@ -30,13 +32,13 @@ function page() {
 
   useEffect(() => {
     fetchProjectDirectoryTree();
-  }, []);
+  }, [projectId, setProjectDirectory]);
 
   return (
     <div className="flex h-screen bg-gray-50">
       <div className="w-72 border-r bg-white overflow-y-auto p-3">
-        {projectDirectoryTree && projectDirectoryTree.length > 0 && (
-          <ProjectSideBar projectTree={projectDirectoryTree} />
+        {projectDirectory && projectDirectory.length > 0 && (
+          <ProjectSideBar projectTree={projectDirectory} />
         )}
       </div>
 

@@ -1,10 +1,12 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ProjectTreeInterface } from "../interface/Project.interface";
 import { ProjectSideBar } from "./ProjectSidebar";
 import { RiArrowRightSLine } from "react-icons/ri";
 import { FiFolder, FiFile } from "react-icons/fi";
 import { useSocket } from "../context/socketContext";
 import { useFileContext } from "../context/fileContext";
+import { Popup } from "./Popup";
+import { usePopup } from "../context/popContext";
 
 export const TreeNode = ({
   nodeDetails,
@@ -12,6 +14,8 @@ export const TreeNode = ({
   nodeDetails: ProjectTreeInterface;
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const { coordinates, setCoordinates } = usePopup();
+  const { currentFilePath } = useFileContext();
 
   const socket = useSocket();
   const { setCurrentFilePath, setCurrentFileContent } = useFileContext();
@@ -50,12 +54,25 @@ export const TreeNode = ({
     });
   };
 
+  const handleRightClick = (e, filePath: string) => {
+    e.preventDefault();
+    setCoordinates({
+      x: e.clientX,
+      y: e.clientY,
+      popForFile: filePath,
+      isFolder: !!!filePath.includes("."),
+    });
+
+    console.log("Right click", filePath);
+  };
+
   return (
     <div className="w-full text-sm text-gray-800">
       {nodeDetails.type === "file" ? (
         <div
           onDoubleClick={() => handleReadFileContent(nodeDetails.path)}
-          className="flex items-center gap-2 px-4 py-1 cursor-pointer hover:bg-gray-200 rounded-md"
+          onContextMenu={(e) => handleRightClick(e, nodeDetails.path)}
+          className={`flex items-center gap-2 px-4 py-1 cursor-pointer hover:bg-gray-200 rounded-md ${currentFilePath === nodeDetails.path && "bg-gray-200"}`}
         >
           <FiFile className="text-gray-600" />
           <span>{nodeDetails.name}</span>
@@ -66,6 +83,7 @@ export const TreeNode = ({
             <div
               className="flex items-center gap-1 px-4 py-1 cursor-pointer hover:bg-gray-200 rounded-md"
               onClick={() => setIsOpen(!isOpen)}
+              onContextMenu={(e) => handleRightClick(e, nodeDetails.path)}
             >
               <RiArrowRightSLine
                 className={`transition-transform duration-200 ${
@@ -85,6 +103,15 @@ export const TreeNode = ({
             )}
           </div>
         )
+      )}
+
+      {coordinates && (
+        <Popup
+          x={coordinates.x}
+          y={coordinates.y}
+          filePath={coordinates.popForFile}
+          isFolder={coordinates.isFolder}
+        />
       )}
     </div>
   );

@@ -7,7 +7,7 @@ export const createNewFile = async (filePath: string, socket: Socket) => {
     await fs.writeFile(filePath, "");
 
     // Emit the event to socket :-
-    socket.emit("new-file", {
+    socket.emit("new-file-created", {
       response: "File Created successfully",
     });
   } catch (error) {
