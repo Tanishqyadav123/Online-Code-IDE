@@ -15,11 +15,12 @@ export const Popup = ({
   filePath: string;
   isFolder: boolean;
 }) => {
-  console.log("Is Folder or not ", isFolder);
   const {
     setCoordinates,
-    setShowNewFileFolderInput,
-    showNewFileFolderInput,
+    setShowNewFileInput,
+    setShowNewFolderInput,
+    showNewFileInput,
+    showNewFolderInput,
     coordinates,
   } = usePopup();
   const { setProjectDirectory, projectId, newFileFolder, setNewFileFolder } =
@@ -30,7 +31,8 @@ export const Popup = ({
 
   const handlePopClose = () => {
     setCoordinates(null);
-    setShowNewFileFolderInput(false);
+    setShowNewFolderInput(false);
+    setShowNewFileInput(false);
   };
 
   // Handle Create New File :-
@@ -40,6 +42,16 @@ export const Popup = ({
     setNewFileFolder({
       name: e.target.value,
       isDirectory: false,
+    });
+  };
+
+  // Handle Create New Folder :-
+  const handleCreateNewFolder = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("Path need to be updated ", coordinates?.popForFile);
+
+    setNewFileFolder({
+      name: e.target.value,
+      isDirectory: true,
     });
   };
 
@@ -97,10 +109,62 @@ export const Popup = ({
     }
   };
 
-  const handleFileDelete = async () => {
-    socket?.emit("delete-file", {
-      filePath,
-    });
+  const handleFolderKeyDown = async (
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (e.key === "Enter") {
+      // Check for patent directory :-
+
+      const createFileOnPath =
+        coordinates?.popForFile + "\\" + newFileFolder?.name;
+
+      if (createFileOnPath.includes(".")) {
+        throw new Error("Folder should not include '.'");
+      }
+
+      console.log("Path is Finally for Folder ", createFileOnPath);
+
+      // close the pop up and set the show input field to false :-
+      handlePopClose();
+
+      // Emit an event for File / folder creation :-
+
+      socket?.emit("new-folder", {
+        filePath: createFileOnPath,
+      });
+
+      // Listen on the event := "new-folder-created" :-
+      socket?.on("new-folder-created", async () => {
+        // Again need to fetch the update state of the project :-
+
+        try {
+          const response = await getProjectDirectoryTreeService(projectId!);
+
+          if (response.success) {
+            setProjectDirectory(response.data);
+            // setCurrentFilePath(createFileOnPath);
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      });
+
+      console.log("Pressed Enter");
+    }
+  };
+
+  const handleFileFolderDelete = async () => {
+    if (filePath.includes(".")) {
+      console.log("Called Delete File");
+      socket?.emit("delete-file", {
+        filePath,
+      });
+    } else {
+      console.log("Called Delete Folder");
+      socket?.emit("delete-folder", {
+        filePath,
+      });
+    }
 
     setCoordinates(null);
 
@@ -132,7 +196,7 @@ export const Popup = ({
       </div>
 
       {isFolder &&
-        (showNewFileFolderInput ? (
+        (showNewFileInput ? (
           <input
             type="text"
             onChange={handleCreateNewFile}
@@ -141,21 +205,29 @@ export const Popup = ({
           />
         ) : (
           <button
-            onClick={() => setShowNewFileFolderInput(true)}
+            onClick={() => setShowNewFileInput(true)}
             className="w-full text-left px-4 py-2 hover:bg-blue-50 text-gray-700"
           >
             new File...
           </button>
         ))}
 
-      {isFolder && (
-        <button
-          // onClick={() => console.log("Rename", nodeDetails.path)}
-          className="w-full text-left px-4 py-2 hover:bg-blue-50 text-gray-700"
-        >
-          new Folder...
-        </button>
-      )}
+      {isFolder &&
+        (showNewFolderInput ? (
+          <input
+            type="text"
+            onChange={handleCreateNewFolder}
+            onKeyDown={handleFolderKeyDown}
+            className="outline-indigo-500 border-gray-400 border-2 w-full px-2 py-1 my-2"
+          />
+        ) : (
+          <button
+            onClick={() => setShowNewFolderInput(true)}
+            className="w-full text-left px-4 py-2 hover:bg-blue-50 text-gray-700"
+          >
+            new Folder...
+          </button>
+        ))}
 
       <button
         // onClick={() => console.log("Rename", nodeDetails.path)}
@@ -165,7 +237,7 @@ export const Popup = ({
       </button>
 
       <button
-        onClick={() => handleFileDelete()}
+        onClick={() => handleFileFolderDelete()}
         className="w-full text-left px-4 py-2 hover:bg-red-50 text-red-600"
       >
         Delete

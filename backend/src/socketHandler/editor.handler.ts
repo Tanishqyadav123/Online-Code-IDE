@@ -1,8 +1,10 @@
 // This will include all the socket handler related to the Editor Namespace :-
 
 import {
+  createFolder,
   createNewFile,
   deleteFile,
+  deleteFolder,
   readFile,
   updateFile,
 } from "../handler/fileHandler.js";
@@ -89,4 +91,41 @@ export const createFileEventHandler = (
   // Call the create file handler :-
   console.log("Data is for creation of file ", filePath);
   createNewFile(filePath, socket);
+};
+
+export const createFolderEventHandler = (
+  data: createFileEventType,
+  socket: Socket,
+) => {
+  const { filePath } = data;
+
+  if (!filePath) {
+    socket.emit("error-read-file", {
+      response: "No Path Provided",
+      data: null,
+    });
+    return;
+  }
+
+  // Call the create folder handler :-
+  console.log("Data is for creation of folder ", filePath);
+  createFolder(filePath, socket);
+};
+export const deleteFolderEventHandler = (
+  data: createFileEventType,
+  socket: Socket,
+) => {
+  const { filePath } = data;
+
+  if (!filePath) {
+    socket.emit("error-read-file", {
+      response: "No Path Provided",
+      data: null,
+    });
+    return;
+  }
+
+  // Call the delete folder handler :-
+  console.log("Data is for deletion of folder ", filePath);
+  deleteFolder(filePath, socket);
 };

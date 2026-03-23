@@ -11,6 +11,8 @@ import {
   readFileEventHandler,
   deleteFileEventHandler,
   createFileEventHandler,
+  createFolderEventHandler,
+  deleteFolderEventHandler,
 } from "../socketHandler/editor.handler.js";
 
 // Creating the namespace for Editor :-
@@ -43,7 +45,22 @@ export function connectToEditorNamespace() {
     );
 
     // Event For Create New file :-
-    socket.on("new-file", (data : createFileEventType) => createFileEventHandler(data, socket));
+    socket.on("new-file", (data: createFileEventType) =>
+      createFileEventHandler(data, socket),
+    );
+
+    // Event For Create New Folder :-
+    socket.on("new-folder", (data: createFileEventType) =>
+      createFolderEventHandler(data, socket),
+    );
+
+    // Event for Delete Folder :-
+
+    socket.on("delete-folder", (data: deleteFileEventType) => {
+      deleteFolderEventHandler(data, socket);
+    });
+
+    // Disconnect
     socket.on("disconnect", () => {
       console.log("Socket Disconnected successFully");
     });

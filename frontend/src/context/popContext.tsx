@@ -23,8 +23,10 @@ export type PopupContextType = {
       isFolder: boolean;
     } | null>
   >;
-  showNewFileFolderInput: boolean;
-  setShowNewFileFolderInput: Dispatch<SetStateAction<boolean>>;
+  showNewFileInput: boolean;
+  setShowNewFileInput: Dispatch<SetStateAction<boolean>>;
+  showNewFolderInput: boolean;
+  setShowNewFolderInput: Dispatch<SetStateAction<boolean>>;
 } | null;
 export const PopupContext = createContext<PopupContextType>(null);
 
@@ -40,15 +42,17 @@ export const PopupContextProvider = ({
     isFolder: boolean;
   } | null>(null);
 
-  const [showNewFileFolderInput, setShowNewFileFolderInput] =
-    useState<boolean>(false);
+  const [showNewFileInput, setShowNewFileInput] = useState<boolean>(false);
+  const [showNewFolderInput, setShowNewFolderInput] = useState<boolean>(false);
   return (
     <PopupContext.Provider
       value={{
         coordinates,
         setCoordinates,
-        setShowNewFileFolderInput,
-        showNewFileFolderInput,
+        showNewFileInput,
+        setShowNewFileInput,
+        showNewFolderInput,
+        setShowNewFolderInput
       }}
     >
       {children}

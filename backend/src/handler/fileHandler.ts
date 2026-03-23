@@ -75,7 +75,7 @@ export const createFolder = async (filePath: string, socket: Socket) => {
     await fs.mkdir(filePath);
 
     // Emit the event to socket :-
-    socket.emit("create-folder", {
+    socket.emit("new-folder-created", {
       response: "Folder created SuccessFully",
     });
   } catch (error) {
@@ -86,10 +86,10 @@ export const createFolder = async (filePath: string, socket: Socket) => {
 
 export const deleteFolder = async (filePath: string, socket: Socket) => {
   try {
-    await fs.rmdir(filePath);
+    await fs.rm(filePath, { recursive: true });
 
     // Emit the event to socket :-
-    socket.emit("delete-folder", {
+    socket.emit("folder-deleted-success", {
       response: "Folder deleted SuccessFully",
     });
   } catch (error) {
