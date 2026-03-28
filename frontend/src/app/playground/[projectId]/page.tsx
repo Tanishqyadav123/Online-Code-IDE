@@ -1,5 +1,6 @@
 "use client";
 
+import { CustomTerminal } from "@/src/appComponents/CustomTerminal";
 import Editor from "@/src/appComponents/Editor";
 import { ProjectSideBar } from "@/src/appComponents/ProjectSidebar";
 import { useProjectDirectory } from "@/src/context/projectDirectoryContext";
@@ -35,14 +36,17 @@ function page() {
   }, [projectId, setProjectDirectory]);
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <div className="w-72 border-r bg-white overflow-y-auto p-3">
-        {projectDirectory && projectDirectory.length > 0 && (
-          <ProjectSideBar projectTree={projectDirectory} />
-        )}
-      </div>
+    <div className="flex flex-col h-screen bg-gray-50 ">
+      <div className="flex h-full ">
+        <div className="w-72 border-r bg-white overflow-y-auto p-3">
+          {projectDirectory && projectDirectory.length > 0 && (
+            <ProjectSideBar projectTree={projectDirectory} />
+          )}
+        </div>
 
-      <Editor customTheme={draculaTheme} />
+        <Editor customTheme={draculaTheme} />
+      </div>
+      <CustomTerminal />
     </div>
   );
 }

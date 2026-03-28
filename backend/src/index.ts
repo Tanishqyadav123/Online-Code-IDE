@@ -7,6 +7,7 @@ import { createFolderIfNotExist } from "./utils/createFolder.js";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { connectToEditorNamespace } from "./namespaces/editor.namespace.js";
+import { connectToTerminalNamespace } from "./namespaces/terminal.namespace.js";
 
 const app = express();
 const server = createServer(app);
@@ -16,6 +17,7 @@ export const io = new Server(server);
 
 // Connected to Editor Namespace :-
 connectToEditorNamespace();
+connectToTerminalNamespace();
 
 const PORT = process.env.PORT || 3000;
 
