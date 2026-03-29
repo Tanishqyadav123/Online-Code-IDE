@@ -7,6 +7,9 @@ export const buildDirectoryTree = async (
 ) => {
   // Base Case :-
 
+  if (fileFolderNamePath.includes("node_modules")) {
+    return;
+  }
   // console.log("All Path ", fileFolderNamePath);
   const stats = await fs.stat(fileFolderNamePath);
 
@@ -31,6 +34,9 @@ export const buildDirectoryTree = async (
   if (stats.isDirectory()) {
     // console.log("DaTA IS ", data);
     for (let i = 0; i < data.length; i++) {
+      if (data[i].includes("node_modules")) {
+        continue;
+      }
       let arr: any[] = [];
       // call for the build directory tree function :-
       let fileArr = await buildDirectoryTree(

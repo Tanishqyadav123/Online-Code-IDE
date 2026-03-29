@@ -72,7 +72,7 @@ export const TreeNode = ({
         <div
           onDoubleClick={() => handleReadFileContent(nodeDetails.path)}
           onContextMenu={(e) => handleRightClick(e, nodeDetails.path)}
-          className={`flex items-center gap-2 px-4 py-1 cursor-pointer hover:bg-gray-200 rounded-md ${currentFilePath === nodeDetails.path && "bg-gray-200"}`}
+          className={`flex items-center gap-2 px-4 text-white  py-1 cursor-pointer hover:bg-gray-400 rounded-md ${currentFilePath === nodeDetails.path && "bg-gray-400"}`}
         >
           <FiFile className="text-gray-600" />
           <span>{nodeDetails.name}</span>
@@ -81,7 +81,7 @@ export const TreeNode = ({
         nodeDetails.children && (
           <div className="w-full">
             <div
-              className="flex items-center gap-1 px-4 py-1 cursor-pointer hover:bg-gray-200 rounded-md"
+              className="flex items-center gap-1 px-4 text-white py-1 cursor-pointer hover:bg-gray-400 rounded-md"
               onClick={() => setIsOpen(!isOpen)}
               onContextMenu={(e) => handleRightClick(e, nodeDetails.path)}
             >

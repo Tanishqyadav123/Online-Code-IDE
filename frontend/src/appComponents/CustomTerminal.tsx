@@ -3,22 +3,42 @@ import xtermCSS from "@xterm/xterm/css/xterm.css";
 import { useEffect, useRef } from "react";
 import { FitAddon } from "@xterm/addon-fit";
 import { io, Socket } from "socket.io-client";
-export const CustomTerminal = () => {
+import { useHostPort } from "../context/portContext";
+export const CustomTerminal = ({ projectId }: { projectId: string }) => {
   // use useEffect for setting the xterm Terminal :-
   const terminalRef = useRef(null);
   const terminalSocketRef = useRef<Socket | null>(null);
+  const { hostPortIp, setHostPortIp } = useHostPort();
+
   useEffect(() => {
     const initTerminal = () => {
+
+      if (!projectId) {
+         return;
+      }
       terminalSocketRef.current = io(
         `${process.env.NEXT_PUBLIC_SOCKET_URL}/terminal`,
         {
           transports: ["websocket"],
+          query: {
+            projectId,
+          },
         },
       );
 
       if (!terminalSocketRef.current) {
         return;
       }
+
+      // Listen for the Host Port :-
+      terminalSocketRef.current.on(
+        "host-port-ip",
+        ({ port, IPAddress }: { port: string; IPAddress: string }) => {
+          if (port && !isNaN(parseInt(port))) {
+            setHostPortIp({ hostPort: parseInt(port), hostIP: IPAddress });
+          }
+        },
+      );
 
       const terminal = new Terminal({
         fontSize: 14,
@@ -40,23 +60,18 @@ export const CustomTerminal = () => {
 
       terminal.onKey((ev) => {
         if (ev.domEvent.key == "Enter") {
-          terminalSocketRef.current?.emit("terminal-input", {
-            cmd: "\r\n",
-          });
+          terminalSocketRef.current?.emit("terminal-input", "\r\n");
           //Send cmd to backend here!
         } else if (ev.domEvent.key == "Backspace") {
-          terminalSocketRef.current?.emit("terminal-input", {
-            cmd: "\b \b",
-          });
+          terminalSocketRef.current?.emit("terminal-input", "\b \b");
         } else {
-          terminalSocketRef.current?.emit("terminal-input", {
-            cmd: ev.key,
-          });
+          terminalSocketRef.current?.emit("terminal-input", ev.key);
         }
       });
 
-      terminalSocketRef.current.on("terminal-output", (data) => {
-        terminal.write(data.cmd);
+      terminalSocketRef.current.on("terminal-output", (outputChunk) => {
+        console.log("Is Getting Called");
+        terminal.write(outputChunk);
       });
 
       () => {
@@ -64,8 +79,9 @@ export const CustomTerminal = () => {
       };
     };
 
-    initTerminal();
-  }, []);
+    console.log("line 79 " , projectId)
+   initTerminal();
+  }, [projectId]);
 
-  return <div className="w-full h-[40%]" ref={terminalRef}></div>;
+  return <div className="w-full h-full" ref={terminalRef}></div>;
 };
